@@ -16,9 +16,7 @@ CloudWatch	CPU trigger to scale when >60%
 Region	Manually provided per execution
 No NAT Gateway	Clean, cost-effective demo setup
 🧱 Terraform Folder Structure
-css
-Copy
-Edit
+
 terraform-infra/
 ├── modules/
 │   ├── s3/
@@ -42,9 +40,7 @@ terraform-infra/
 🔹 modules/s3/main.tf
 Creates 3 uniquely named S3 buckets using:
 
-hcl
-Copy
-Edit
+
 resource "aws_s3_bucket" "buckets" {
   count = 3
   bucket = "${var.env_name}-s3-bucket-${count.index + 1}"
@@ -58,9 +54,7 @@ VPC
 S3 VPC endpoint
 
 🔹 modules/vpc/outputs.tf
-hcl
-Copy
-Edit
+
 output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
@@ -98,24 +92,18 @@ module "asg" {
   private_subnet_ids = module.vpc.private_subnet_ids
 }
 ✅ variables.tf
-h
-Copy
-Edit
+
 variable "region" {
   description = "AWS region to deploy resources"
   type        = string
 }
 ✅ outputs.tf
-hcl
-Copy
-Edit
+
 output "private_subnet_ids" {
   value = module.vpc.private_subnet_ids
 }
 ✅ backend.tf
-hcl
-Copy
-Edit
+
 terraform {
   backend "s3" {
     bucket         = "terraform-state-backend-demo"      # Replace with your actual bucket
@@ -133,39 +121,29 @@ Optionally create DynamoDB table terraform-locks with LockID as primary key
 
 🚀 Execution Steps
 ✅ 1. Navigate to environment folder
-bash
-Copy
-Edit
-cd terraform-infra/envs/dev   # or test/prod
+
+cd terraform-infra/envs/dev     # or test/prod
 ✅ 2. Initialize Terraform (will use backend.tf)
-bash
-Copy
-Edit
+
 terraform init
 ✅ 3. Plan with region input
-bash
-Copy
-Edit
+
 terraform plan -var="region=us-east-1"
 ✅ 4. Apply
-bash
-Copy
-Edit
+
 terraform apply -auto-approve -var="region=us-east-1"
 ✅ 5. Destroy
-bash
-Copy
-Edit
+
 terraform destroy -auto-approve -var="region=us-east-1"
+
 📝 How to Change Environment
 Task	What to Do
 Switch Environment	cd envs/test or cd envs/prod
 Change Region	Pass -var="region=..." in commands
 Remote State Paths	Update key = "test/terraform.tfstate" in backend.tf
 ✅ Jenkins Pipeline for Automation
+
 groovy
-Copy
-Edit
 pipeline {
   agent any
 
