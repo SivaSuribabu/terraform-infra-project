@@ -1,0 +1,42 @@
+pipeline {
+  agent any
+  environment {
+    ENV_NAME = "dev"
+    REGION   = "us-east-1"
+  }
+  triggers {
+    pollSCM('* * * * *')
+  }
+  stages {
+    stage('Clone Repo') {
+      steps {
+        git 'https://github.com/your-org/terraform-infra.git'
+      }
+    }
+
+    stage('Init') {
+      steps {
+        dir("envs/${ENV_NAME}") {
+          sh "terraform init"
+        }
+      }
+    }
+
+    stage('Plan') {
+      steps {
+        dir("envs/${ENV_NAME}") {
+          sh "terraform plan -var='region=${REGION}'"
+        }
+      }
+    }
+
+    stage('Apply') {
+      steps {
+        dir("envs/${ENV_NAME}") {
+          sh "terraform apply -auto-approve -var='region=${REGION}'"
+        }
+      }
+    }
+  }
+}
+
